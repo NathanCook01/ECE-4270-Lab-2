@@ -1,0 +1,22 @@
+Nathan Cook
+Chris Roy
+
+PROGRAM DETAILS:
+    write a RISCV (32 bit) assembler to generate hex instructions to be used in the simulator developed in the previous lab
+    INPUTS:
+        RISCV assembly (.txt file)
+    OUTPUTS:
+        RISCV machine code, hex format (.txt file)
+    We may need to update the simulator to support more instruction types
+
+METHOD:
+    read in instructions line-by-line
+        read in instruction name (add, subi, lw, etc) and write the corresponding opcode
+        use a table lookup (along with the name) to write the values of f3 and f7 (if needed)       [R-type]
+        OR use a table lookup to write the value of f3 and convert immediates to hex                [I-type]
+        OR use a table lookup to write the f3 converting the immediate to a split-up hex value      [S,B-type]
+        OR convert the immediate value to a whole hex value                                         [U,J-type]
+        read in rs2,rs1 and rd as needed
+    
+    Use output variables from the above process to write the output instuction to a file
+
