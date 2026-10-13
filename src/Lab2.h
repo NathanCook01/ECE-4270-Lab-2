@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#define MAX_INS 100
+#define MAX_CHAR_PER_LINE 100
+
+// Function to read .txt file that has RV32 and write into a buffer
+void file_to_buffer(FILE* fp, char buffer[100][100]);
+
 // struct to hold info for R type instructions
 typedef struct RTYPE_INSTRUCTION{ 
     int32_t opcode;     // bits 0 - 6
@@ -44,14 +50,14 @@ typedef struct BTYPE_INSTRUCTION{
 } b_ins_t;
 
 // struct to hold info for U type instructions
-typedef struct BTYPE_INSTRUCTION{ 
+typedef struct UTYPE_INSTRUCTION{ 
     int32_t opcode;     // bits 0 - 6
     int32_t rd;         // bits 7 - 11 
     int32_t imm;        // bits 12 - 31
-} b_ins_t;
+} u_ins_t;
 
 // struct to hold info for J type instructions
-typedef struct BTYPE_INSTRUCTION{ 
+typedef struct JTYPE_INSTRUCTION{ 
     int32_t opcode;     // bits 0 - 6
     int32_t rd;         // bits 7 - 11 
     int32_t imm;        // bits 12 - 31
@@ -62,4 +68,37 @@ typedef struct BTYPE_INSTRUCTION{
         instruction bits 21-30 bit immediate bits 1 - 10
         instruction bit 31 holds the 20th immediate bit
     */
-} b_ins_t;
+} j_ins_t;
+
+void file_to_buffer(FILE* fp, char buffer[100][100]){ // assume fp is open for read
+    size_t i = 0;
+    size_t j = 0;
+    char character;
+    char throwaway[MAX_CHAR_PER_LINE];
+    while (i < MAX_INS){
+        while (j < MAX_CHAR_PER_LINE-1 && (character = fgetc(fp)) != EOF){
+            if(character == '#' && j == 0){
+                // buffer[i][j] = '\n';
+                fgets(throwaway, 100, fp);
+                break;
+            }
+            else if(character == '#' || character == '\n'){
+                buffer[i][j] = '\n';
+                fgets(throwaway, 100, fp);
+                break;
+            }
+
+            buffer[i][j] = character;
+            j++;
+        }
+        j=0;
+        i++;
+    }
+}
+
+void print_buffer(char buffer[MAX_INS][MAX_CHAR_PER_LINE]){
+    for(int i=0; i < MAX_INS; i++){
+        printf("%s", buffer[i]);
+    }
+}
+
