@@ -74,19 +74,26 @@ void file_to_buffer(FILE* fp, char buffer[100][100]){ // assume fp is open for r
     size_t i = 0;
     size_t j = 0;
     char character;
-    char throwaway[MAX_CHAR_PER_LINE];
+    char throwaway[MAX_CHAR_PER_LINE]; // used to ignore certain things from input (comments & newline)
     while (i < MAX_INS){
         while (j < MAX_CHAR_PER_LINE-1 && (character = fgetc(fp)) != EOF){
-            if(character == '#' && j == 0){
+            // Ignores lines that start w comments or blank lines
+            if((character == '#' || character == '\n') && j == 0){
                 // buffer[i][j] = '\n';
                 fgets(throwaway, 100, fp);
                 break;
             }
+            // treats lines ending w comments as newline characters
             else if(character == '#' || character == '\n'){
                 buffer[i][j] = '\n';
                 fgets(throwaway, 100, fp);
                 break;
             }
+            // else if(character == '\n' && j == 0){
+            //     // buffer[i][j] = '\n';
+            //     fgets(throwaway, 100, fp);
+            //     break;
+            // }
 
             buffer[i][j] = character;
             j++;
@@ -99,6 +106,14 @@ void file_to_buffer(FILE* fp, char buffer[100][100]){ // assume fp is open for r
 void print_buffer(char buffer[MAX_INS][MAX_CHAR_PER_LINE]){
     for(int i=0; i < MAX_INS; i++){
         printf("%s", buffer[i]);
+    }
+}
+
+void init_buffer(char buffer[MAX_CHAR_PER_LINE][MAX_INS]){
+    for(int i=0; i < MAX_INS; i++){
+        for(int j=0; j< MAX_CHAR_PER_LINE; j++){
+            buffer[i][j]=0;
+        }
     }
 }
 
