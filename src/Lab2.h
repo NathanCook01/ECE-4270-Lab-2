@@ -8,7 +8,7 @@
 #define MAX_CHAR_PER_LINE 100
 
 // Function to read .txt file that has RV32 and write into a buffer
-void file_to_buffer(FILE* fp, char buffer[100][100]);
+void file_to_buffer(FILE* fp, char buffer[MAX_INS][MAX_CHAR_PER_LINE]);
 
 // struct to hold info for R type instructions
 typedef struct RTYPE_INSTRUCTION{ 
@@ -70,30 +70,33 @@ typedef struct JTYPE_INSTRUCTION{
     */
 } j_ins_t;
 
-void file_to_buffer(FILE* fp, char buffer[100][100]){ // assume fp is open for read
+void file_to_buffer(FILE* fp, char buffer[MAX_INS][MAX_CHAR_PER_LINE]){ // assume fp is open for read
     size_t i = 0;
     size_t j = 0;
     char character;
     char throwaway[MAX_CHAR_PER_LINE]; // used to ignore certain things from input (comments & newline)
     while (i < MAX_INS){
-        while (j < MAX_CHAR_PER_LINE-1 && (character = fgetc(fp)) != EOF){
-            // Ignores lines that start w comments or blank lines
-            if((character == '#' || character == '\n') && j == 0){
-                // buffer[i][j] = '\n';
-                fgets(throwaway, 100, fp);
+        while (j < MAX_CHAR_PER_LINE && (character = fgetc(fp)) != EOF){
+            // Ignore lines that start with a comment
+            if (character == '#' && j == 0) {
+                fgets(throwaway, MAX_CHAR_PER_LINE, fp);
                 break;
             }
-            // treats lines ending w comments as newline characters
-            else if(character == '#' || character == '\n'){
+            // Ignore blank lines
+            else if (character == '\n' && j == 0) {
+                break;
+            }
+            // Inline comment: terminate line with '\n' and flush the rest of the comment
+            else if (character == '#') {
                 buffer[i][j] = '\n';
-                fgets(throwaway, 100, fp);
+                fgets(throwaway, MAX_CHAR_PER_LINE, fp);
                 break;
             }
-            // else if(character == '\n' && j == 0){
-            //     // buffer[i][j] = '\n';
-            //     fgets(throwaway, 100, fp);
-            //     break;
-            // }
+            // Normal end of line: store '\n' and stop reading this line
+            else if (character == '\n') {
+                buffer[i][j] = '\n';
+                break;
+            }
 
             buffer[i][j] = character;
             j++;
@@ -109,11 +112,10 @@ void print_buffer(char buffer[MAX_INS][MAX_CHAR_PER_LINE]){
     }
 }
 
-void init_buffer(char buffer[MAX_CHAR_PER_LINE][MAX_INS]){
+void clear_buffer(char buffer[MAX_CHAR_PER_LINE][MAX_INS]){
     for(int i=0; i < MAX_INS; i++){
         for(int j=0; j< MAX_CHAR_PER_LINE; j++){
             buffer[i][j]=0;
         }
     }
 }
-
