@@ -21,6 +21,6 @@ int main(int argc, char* argv[]){
     char buffer[MAX_INS][MAX_CHAR_PER_LINE];
     clear_buffer(buffer);
     file_to_buffer(fp, buffer);
-    print_buffer(buffer);
+    // print_buffer(buffer);
     return 0;
 }

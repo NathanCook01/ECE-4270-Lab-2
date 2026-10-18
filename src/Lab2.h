@@ -9,6 +9,7 @@
 
 // Function to read .txt file that has RV32 and write into a buffer
 void file_to_buffer(FILE* fp, char buffer[MAX_INS][MAX_CHAR_PER_LINE]);
+// void create_ins_array(gen_ins_t gen_ins_array[MAX_INS], char buffer[MAX_INS][MAX_CHAR_PER_LINE]);
 
 // struct to hold info for R type instructions
 typedef struct RTYPE_INSTRUCTION{ 
@@ -70,6 +71,28 @@ typedef struct JTYPE_INSTRUCTION{
     */
 } j_ins_t;
 
+
+// once the buffer is populated, use an array of this struct to organize
+// makes things easier later
+typedef struct GENERAL_INSTRUCTION{
+    int type_flag;
+    /*
+    1->r
+    2->i
+    3->s
+    4->b
+    5->u
+    6->j
+    */
+    char label[16];
+    r_ins_t r_type;
+    i_ins_t i_type;
+    s_ins_t s_type;
+    b_ins_t b_type;
+    u_ins_t u_type;
+    j_ins_t j_type;
+}gen_ins_t;
+
 void file_to_buffer(FILE* fp, char buffer[MAX_INS][MAX_CHAR_PER_LINE]){ // assume fp is open for read
     size_t i = 0;
     size_t j = 0;
@@ -119,3 +142,16 @@ void clear_buffer(char buffer[MAX_CHAR_PER_LINE][MAX_INS]){
         }
     }
 }
+
+void create_ins_array(gen_ins_t* gen_ins_array[MAX_INS], char buffer[MAX_INS][MAX_CHAR_PER_LINE]){
+    char token;
+    // read in any label from the first field of ASM code
+    for(int i=0; i<MAX_INS; i++){
+        token = strtok(buffer[i], ":"); // comment will always be delimited with a ":"
+        if(token != NULL){
+            snprintf(gen_ins_array[i]->label, 16, token);
+        }
+    }
+
+}
+
